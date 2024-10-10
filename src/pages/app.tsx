@@ -13,20 +13,23 @@ L.Icon.Default.mergeOptions({
 });
 
 // Component to handle map click events and update coordinates
-const LocationMarker = ({ setCoordinates, setAddressData }) => {
+export const LocationMarker = ({ setCoordinates, setAddressData }) => {
   const [position, setPosition] = useState(null);
 
   // Function to get address from coordinates using reverse geocoding
-  const getAddressFromCoordinates = async (lat, lon) => {
+  const getAddressFromCoordinates = async (lat: number, lon: number) => {
     try {
-      const response = await axios.get("https://nominatim.openstreetmap.org/reverse", {
-        params: {
-          format: "json",
-          lat: lat,
-          lon: lon,
-          addressdetails: 1,
+      const response = await axios.get(
+        "https://nominatim.openstreetmap.org/reverse?lat=${e.latlng.lat}&lon=${e.latlng.lng}&format=json&accept-language=ru",
+        {
+          params: {
+            format: "json",
+            lat: lat,
+            lon: lon,
+            addressdetails: 1,
+          },
         },
-      });
+      );
       setAddressData(response.data);
     } catch (error) {
       console.error("Error fetching data from OpenStreetMap:", error);
@@ -58,15 +61,13 @@ const App = () => {
 
   return (
     <div style={{ padding: "20px", fontFamily: "Roboto" }}>
-      {/* <h1>OpenStreetMap Reverse Geocoding</h1> */}
-
       {/* Map Section */}
-      <div style={{ marginTop: "100px", height: "500px" }}>
+      <div style={{ marginTop: "100px", height: "600px" }}>
         {/* <h3>Click on the Map to Get Address</h3> */}
         <MapContainer
           center={[coordinates.lat, coordinates.lon]}
-          zoom={13}
-          style={{ height: "400px", width: "100%" }}
+          zoom={15}
+          style={{ height: "600px", width: "100%" }}
         >
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -79,23 +80,17 @@ const App = () => {
       {/* Display the Address Information */}
       {addressData && (
         <div style={{ marginTop: "20px" }}>
-          <h3>Address Details</h3>
-          <p>{/* <strong>Display Name:</strong> {addressData.display_name} */}</p>
+          {/* <h3>Address Details</h3> */}
+          <p>
+            <strong>Full Address:</strong> {addressData.display_name}
+          </p>
           <p>
             <strong>Street:</strong> {addressData.address.road}
           </p>
-          {/* <p>
-            <strong>City:</strong> {addressData.address.city || addressData.address.town}
-          </p> */}
+
           <p>
             <strong>House number:</strong> {addressData.address.house_number}
           </p>
-          {/* <p>
-            <strong>Country:</strong> {addressData.address.country}
-          </p>
-          <p>
-            <strong>Postcode:</strong> {addressData.address.postcode}
-          </p> */}
         </div>
       )}
     </div>
